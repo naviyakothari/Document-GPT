@@ -18,7 +18,7 @@ st.set_page_config(page_title="Document GPT", page_icon="📚")
 st.title("📚 Document GPT")
 st.markdown(
     """
-    Welcome! Upload one or more documents and ask AI questions about them.
+    Welcome! Use this AI chatbot to ask questions about your documents.
 
     **Instructions:**
     1. Input your OpenAI API Key (required).
