@@ -40,6 +40,15 @@ def load_api_key():
         return ""
     return ""
 
+def remove_api_key():
+    """Remove the API key from config file."""
+    try:
+        if CONFIG_FILE.exists():
+            CONFIG_FILE.unlink()
+        return True
+    except Exception:
+        return False
+
 # ---- Streamlit Page Config ----
 st.set_page_config(page_title="Document GPT", page_icon="📚")
 st.title("📚 Document GPT")
@@ -152,10 +161,20 @@ with st.sidebar:
     ).strip()
     
     # Update the API key in session state and save to file when changed
-    if api_key_input and api_key_input != st.session_state.openai_api_key:
-        st.session_state.openai_api_key = api_key_input
-        save_api_key(api_key_input)
-        st.success("API Key saved successfully!")
+    if api_key_input != st.session_state.openai_api_key:
+        if api_key_input:  # Only save if api key is not empty
+            # Basic validation of API key format
+            if len(api_key_input) < 20:  # OpenAI API keys are typically longer
+                st.error("Please enter a valid OpenAI API key.")
+            else:
+                st.session_state.openai_api_key = api_key_input
+                save_api_key(api_key_input)
+                st.success("API Key saved successfully!")
+        elif st.session_state.openai_api_key:  # If there was a key before and now it's empty
+            if remove_api_key():
+                st.session_state.openai_api_key = ""
+                st.success("API Key removed successfully!")
+                st.rerun()
     
     st.markdown("### 📂 Upload New Files")
     new_files = st.file_uploader(
